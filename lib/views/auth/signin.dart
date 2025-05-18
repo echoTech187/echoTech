@@ -1,18 +1,21 @@
+import 'package:echo_tech/controllers/auth.controllers.dart';
 import 'package:flutter/material.dart';
 
+import '../../utils/components/button.dart';
 import '../../utils/style.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SigninPage extends StatefulWidget {
+  const SigninPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SigninPage> createState() => _SigninPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SigninPageState extends State<SigninPage> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   bool passwordVisible = false;
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
@@ -57,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30),
               child: Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     PhysicalModel(
@@ -107,15 +111,16 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(
                       height: 20,
                     ),
-                    PhysicalModel(
-                      color: Colors.transparent,
-                      elevation: 6,
-                      shadowColor: Colors.black45,
-                      child: FilledButton(
-                        onPressed: () => {},
-                        style: loginButtonStyle(context),
-                        child: const Text("Sign In"),
-                      ),
+                    loginButton(
+                      context,
+                      text: const Text("Sign In"),
+                      onPress: () {
+                        AuthController().signIn(
+                          context,
+                          email: emailController.text,
+                          password: passwordController.text,
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -126,7 +131,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const Center(
               child: SizedBox(
-                child: Text("- or login with - "),
+                child: Text(
+                  "- or login with - ",
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
               ),
             ),
             const SizedBox(
@@ -138,13 +148,13 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black12,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        border: Border.all(
+                          color: Colors.black12,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
                     child: SizedBox(
                       width: MediaQuery.sizeOf(context).width,
                       height: 24,
@@ -153,11 +163,12 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: Image(
-                                image: AssetImage("public/assets/google.png"),
-                              ),),
+                            width: 30,
+                            height: 30,
+                            child: Image(
+                              image: AssetImage("public/assets/google.png"),
+                            ),
+                          ),
                           SizedBox(
                             width: 12,
                           ),
@@ -178,9 +189,9 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.black12,
                           width: 1.0,
                         ),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
                     child: SizedBox(
                       width: MediaQuery.sizeOf(context).width,
                       height: 24,
@@ -193,7 +204,8 @@ class _LoginPageState extends State<LoginPage> {
                             height: 30,
                             child: Image(
                               image: AssetImage("public/assets/facebook.png"),
-                            ),),
+                            ),
+                          ),
                           SizedBox(
                             width: 12,
                           ),
