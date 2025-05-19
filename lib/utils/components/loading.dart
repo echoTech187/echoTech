@@ -38,7 +38,8 @@ class Loading extends StatelessWidget {
     });
   }
 
-  showAlertDialog(BuildContext context) {
+  showAlertDialog(BuildContext context,{String? message}) {
+    message =message ?? "";
     AlertDialog alert = AlertDialog(
       clipBehavior: Clip.hardEdge,
       content: Row(
@@ -49,9 +50,8 @@ class Loading extends StatelessWidget {
           Container(
             width: 200,
             margin: const EdgeInsets.only(left: 15),
-            child: const Text(
-              "Mohon tunggu sebentar. \nPermintaan sedang diproses...",
-              style: TextStyle(
+            child: Text(message=="" ? "Mohon tunggu sebentar. \nPermintaan sedang diproses..." : message ,
+              style: const TextStyle(
                 fontSize: 12,
               ),
             ),

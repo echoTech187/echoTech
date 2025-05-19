@@ -5,6 +5,7 @@ import 'package:echo_tech/services/auth.services.dart';
 import 'package:flutter/material.dart';
 
 import '../features/home.dart';
+import '../utils/components/loading.dart';
 
 class AuthController {
   AuthServices authServices = AuthServices();
@@ -28,6 +29,8 @@ class AuthController {
         String? token = await getSessionUserSharedPreferences("token");
         if (token != null) {
           if (context.mounted) {
+            const Loading()
+                .showAlertDialog(context, message: result['message']);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 behavior: SnackBarBehavior.floating,
@@ -52,6 +55,7 @@ class AuthController {
         }
       } else {
         if (context.mounted) {
+          const Loading().showAlertDialog(context, message: result['message']);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               behavior: SnackBarBehavior.floating,
@@ -62,6 +66,8 @@ class AuthController {
         }
       }
     } else {
+      const Loading().showAlertDialog(context,
+          message: "Username and password is required");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           behavior: SnackBarBehavior.floating,
@@ -79,6 +85,7 @@ class AuthController {
     dynamic result = await authServices.signOut(userID, token);
     if (result['status'] == "success") {
       if (context.mounted) {
+        const Loading().showAlertDialog(context, message: result['message']);
         ScaffoldMessenger.of(context)
             .showSnackBar(
               SnackBar(
@@ -104,6 +111,7 @@ class AuthController {
       }
     } else {
       if (context.mounted) {
+        const Loading().showAlertDialog(context, message: result['message']);
         ScaffoldMessenger.of(context)
             .showSnackBar(
               SnackBar(
