@@ -16,19 +16,41 @@ class AuthServices {
         });
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
-      Auth.fromJson(
-        {
-          "userId": result['data']['id'],
-          "username": result['data']['username'],
-          "firstName": result['data']['firstName'],
-          "lastName" : result['data']['lastName'],
-          "token": result['token']
-        },
-      );
+      if (result['status'] == "success") {
+        Auth.fromJson(
+          {
+            "userId": result['data']['id'],
+            "username": result['data']['username'],
+            "firstName": result['data']['firstName'],
+            "lastName": result['data']['lastName'],
+            "token": result['token']
+          },
+        );
+      }
       return response.body;
-    }else{
+    } else {
       return response.body;
     }
+  }
 
+  Future<Map<String, dynamic>> signOut(String userID, String token) async {
+    var body = {"id": userID};
+    http.Response response = await http.post(
+        Uri.parse("http://192.168.61.199:3000/api/auth/logout"),
+        body: json.encode(body),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        });
+    if (response.statusCode == 200) {
+      dynamic result = json.decode(response.body);
+      if (result['status'] == "success") {
+        return result;
+      }else{
+        return result;
+      }
+    } else {
+      return json.decode(response.body);
+    }
   }
 }

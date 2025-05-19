@@ -1,4 +1,5 @@
 import 'package:echo_tech/controllers/auth.controllers.dart';
+import 'package:echo_tech/utils/components/loading.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/components/button.dart';
@@ -115,6 +116,7 @@ class _SigninPageState extends State<SigninPage> {
                       context,
                       text: const Text("Sign In"),
                       onPress: () {
+                        const Loading().showAlertDialog(context);
                         AuthController().signIn(
                           context,
                           email: emailController.text,

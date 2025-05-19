@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'package:echo_tech/features/auth/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:echo_tech/services/auth.services.dart';
 import 'package:flutter/material.dart';
 
 import '../features/home.dart';
 
-
 class AuthController {
+  AuthServices authServices = AuthServices();
   signIn(
     BuildContext context, {
     required String email,
@@ -15,39 +16,47 @@ class AuthController {
     if (email.isNotEmpty && password.isNotEmpty) {
       String authResult =
           (await AuthServices().signIn(email: email, password: password));
-      var result = jsonDecode(authResult);
-      if (result['responseCode'] == 200 &&
-          result['token'].toString().isNotEmpty) {
-        try {
-          final Future<SharedPreferencesWithCache> _prefs =
-          SharedPreferencesWithCache.create(
-              cacheOptions: const SharedPreferencesWithCacheOptions(
-                  allowList: <String>{'token'}));
-          final SharedPreferencesWithCache prefs = await _prefs;
-          prefs.setString("token", result["token"]);
-          String token = prefs.getString('token') ?? "";
-          print(token);
-          if(token.isNotEmpty){
+      Map<String, dynamic> result = jsonDecode(authResult);
+      if (result['status'] == "success") {
+        addSessionUserSharedPreferences("token", result['token']);
+        addSessionUserSharedPreferences("userID", result['data']['id']);
+        addSessionUserSharedPreferences("username", result['data']['username']);
+        addSessionUserSharedPreferences("fullName",
+            result['data']['firstName'] + " " + result['data']['lastName']);
+        addSessionUserSharedPreferences("email", email);
+
+        String? token = await getSessionUserSharedPreferences("token");
+        if (token != null) {
+          if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                behavior: SnackBarBehavior.floating,
                 backgroundColor: Colors.green,
                 content: Text(result['message']),
-
               ),
             );
-            Future.delayed(const Duration(seconds: 3),(){
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) =>
-                const HomePage(),
-              ),);
-            });
-
           }
-        } catch (error) {
+          Future.delayed(
+            const Duration(seconds: 3),
+            () {
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              }
+            },
+          );
+        }
+      } else {
+        if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.red,
-              content: Text(error.toString()),
+              content: Text(result['message']),
             ),
           );
         }
@@ -55,10 +64,79 @@ class AuthController {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
           content: Text('Username and password is required'),
         ),
       );
     }
+  }
+
+  signOut(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userID = await getSessionUserSharedPreferences("userID");
+    String token = await getSessionUserSharedPreferences("token");
+    dynamic result = await authServices.signOut(userID, token);
+    if (result['status'] == "success") {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+              SnackBar(
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.green,
+                content: Text(result['message']),
+              ),
+            )
+            .closed
+            .then(
+          (SnackBarClosedReason reason) {
+            prefs.clear();
+            if (context.mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => const AuthPage(),
+                ),
+              );
+            }
+          },
+        );
+      }
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+              SnackBar(
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.red,
+                content: Text(result['message']),
+              ),
+            )
+            .closed
+            .then(
+          (SnackBarClosedReason reason) {
+            prefs.clear();
+            if (context.mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => const AuthPage(),
+                ),
+              );
+            }
+          },
+        );
+      }
+    }
+  }
+
+  addSessionUserSharedPreferences(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
+  }
+
+  getSessionUserSharedPreferences(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? "";
   }
 }
