@@ -1,14 +1,65 @@
 import 'dart:convert';
-import 'package:echo_tech/features/auth/auth.dart';
+import 'package:echo_tech/features/auth/signin.layout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:echo_tech/services/auth.services.dart';
 import 'package:flutter/material.dart';
 
+import '../components/loading.dart';
 import '../features/home.dart';
-import '../utils/components/loading.dart';
 
 class AuthController {
   AuthServices authServices = AuthServices();
+  signUp(BuildContext context, {required Map<String, Object> data}) async {
+    String authResult = await authServices.signUp(data:data);
+    Map<String, dynamic> result = jsonDecode(authResult);
+    if (result['status'] == "success") {
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        const Loading()
+            .showAlertDialog(context, message: result['message']);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+            content: Text(result['message']),
+          ),
+        );
+      }
+      Future.delayed(
+        const Duration(seconds: 3),
+            () {
+          if (context.mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>  const SigninLayout(),
+              ),
+            );
+          }
+        },
+      );
+    }else{
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        const Loading().showAlertDialog(context, message: result['message']);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+            content: Text(result['message']),
+          ),
+        )
+            .closed
+            .then((SnackBarClosedReason reason) {
+          if (context.mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+        });
+      }
+    }
+  }
+
   signIn(
     BuildContext context, {
     required String email,
@@ -29,6 +80,7 @@ class AuthController {
         String? token = await getSessionUserSharedPreferences("token");
         if (token != null) {
           if (context.mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
             const Loading()
                 .showAlertDialog(context, message: result['message']);
             ScaffoldMessenger.of(context).showSnackBar(
@@ -55,26 +107,40 @@ class AuthController {
         }
       } else {
         if (context.mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
           const Loading().showAlertDialog(context, message: result['message']);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.red,
-              content: Text(result['message']),
-            ),
-          );
+          ScaffoldMessenger.of(context)
+              .showSnackBar(
+                SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.red,
+                  content: Text(result['message']),
+                ),
+              )
+              .closed
+              .then((SnackBarClosedReason reason) {
+            if (context.mounted) {
+              Navigator.of(context, rootNavigator: true).pop();
+            }
+          });
         }
       }
     } else {
+      Navigator.of(context, rootNavigator: true).pop();
       const Loading().showAlertDialog(context,
           message: "Username and password is required");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          content: Text('Username and password is required'),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+            const SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.red,
+              content: Text('Username and password is required'),
+            ),
+          )
+          .closed
+          .then((SnackBarClosedReason reason) {
+        if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
+      });
     }
   }
 
@@ -85,6 +151,7 @@ class AuthController {
     dynamic result = await authServices.signOut(userID, token);
     if (result['status'] == "success") {
       if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
         const Loading().showAlertDialog(context, message: result['message']);
         ScaffoldMessenger.of(context)
             .showSnackBar(
@@ -102,7 +169,7 @@ class AuthController {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) => const AuthPage(),
+                  builder: (BuildContext context) => const SigninLayout(),
                 ),
               );
             }
@@ -111,6 +178,7 @@ class AuthController {
       }
     } else {
       if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
         const Loading().showAlertDialog(context, message: result['message']);
         ScaffoldMessenger.of(context)
             .showSnackBar(
@@ -123,14 +191,8 @@ class AuthController {
             .closed
             .then(
           (SnackBarClosedReason reason) {
-            prefs.clear();
             if (context.mounted) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => const AuthPage(),
-                ),
-              );
+              Navigator.of(context, rootNavigator: true).pop();
             }
           },
         );

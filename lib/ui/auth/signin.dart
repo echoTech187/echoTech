@@ -69,17 +69,23 @@ class _SigninPageState extends State<SigninPage> {
                       validateType: ValidateType.email,
                       label: 'Email',
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    InputField(
+                    PasswordField(
                       controller: passwordController,
                       inputType: TextInputType.visiblePassword,
                       validateType: ValidateType.defaultPassword,
                       label: 'Password',
-                    ),
-                    const SizedBox(
-                      height: 20,
+                      showHidePassword: IconButton(
+                        icon: Icon(
+                          passwordVisible
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () => {
+                          setState(() {
+                            passwordVisible = !passwordVisible;
+                          })
+                        },
+                      ),
                     ),
                     PrimaryButton(
                       context: context,
@@ -111,9 +117,6 @@ class _SigninPageState extends State<SigninPage> {
                     platformType: PlatformType.login,
                     platform: 'Google',
                     onTap: () {},
-                  ),
-                  const SizedBox(
-                    height: 20,
                   ),
                   SocialMediaButton(
                     platformType: PlatformType.login,

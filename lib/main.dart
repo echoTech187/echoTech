@@ -1,8 +1,9 @@
 import 'package:echo_tech/features/home.dart';
-import 'package:echo_tech/utils/components/loading.dart';
 import 'package:flutter/material.dart';
+import 'components/loading.dart';
 import 'controllers/auth.controllers.dart';
-import 'features/auth/auth.dart';
+import 'features/auth/signin.layout.dart';
+import 'features/auth/signup.layout.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,16 +43,21 @@ class _MyAppState extends State<MyApp> {
       ),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: const ColorScheme.light(),
         useMaterial3: true,
       ),
+      routes: {
+        "/signin":(context)=> const SigninLayout() ,
+        "/signup":(context)=> const SignupLayout()
+      },
+      initialRoute: '/',
       home: (isLoading)
           ? const Center(
               child: Loading(),
             )
           : token.toString().isNotEmpty
               ? const HomePage()
-              : const AuthPage(),
+              : const SigninLayout(),
     );
   }
 }

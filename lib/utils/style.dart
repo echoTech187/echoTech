@@ -1,34 +1,7 @@
 import 'package:flutter/material.dart';
 
-const TextStyle labelStyle = TextStyle(color: Colors.black38, fontSize: 14);
-ButtonStyle loginButtonStyle(BuildContext context) {
-  return ButtonStyle(
-    padding: WidgetStateProperty.all(
-      const EdgeInsets.symmetric(
-        vertical: 12.0,
-        horizontal: 60.0,
-      ),
-    ),
-    shape: const WidgetStatePropertyAll(
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
-        ),
-      ),
-    ),
-    fixedSize: WidgetStatePropertyAll(
-      Size.fromWidth(MediaQuery.sizeOf(context).width),
-    ),
-    backgroundColor: const WidgetStatePropertyAll(
-      Color.fromRGBO(30, 49, 157, 1),
-    ),
-    textStyle: const WidgetStatePropertyAll(
-      TextStyle(
-        fontSize: 16,
-      ),
-    ),
-  );
-}
+TextStyle labelStyle = TextStyle(fontSize: 14, color: Colors.grey[400]);
+
 
 InputDecoration inputDecoration({
   required String title,

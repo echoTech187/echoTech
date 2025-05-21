@@ -1,7 +1,7 @@
 import 'package:echo_tech/controllers/auth.controllers.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/components/loading.dart';
+import '../components/loading.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
