@@ -14,7 +14,7 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Builder(
         builder: (BuildContext context) {
